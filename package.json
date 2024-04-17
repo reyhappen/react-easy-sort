@@ -1,6 +1,6 @@
 {
   "name": "@reyhappen/react-easy-sort",
-  "version": "1.7.2",
+  "version": "1.7.3",
   "description": "A React component to sort items in lists or grids",
   "homepage": "https://reyhappen.github.io/react-easy-sort/",
   "keywords": [
