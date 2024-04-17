@@ -1,0 +1,20 @@
+{
+  "git": {
+    "requireBranch": "main",
+    "addUntrackedFiles": true,
+    "commitMessage": "bump: release v1.7.1",
+    "requireCleanWorkingDir": false,
+    "requireUpstream": true,
+    "pushRepo": "git@github.com:reyhappen/react-easy-sort.git",
+    "pushArgs": ["--follow-tags"]
+  },
+  "github": {
+    "release": true
+  },
+  "npm": {
+    "publish": true,
+    "publishPath": "./dist/",
+    "publishArgs": ["--access=public"],
+    "allowSameVersion": true
+  }
+}

@@ -1,13 +1,12 @@
 import React from 'react'
-import arrayMove from 'array-move'
-
-import { Story } from '@storybook/react'
-
+import { arrayMoveImmutable } from 'array-move'
+import type { Meta, StoryFn } from '@storybook/react'
+import { Avatar, Fab } from '@mui/material'
+import { makeStyles } from '@mui/styles'
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import SortableList, { SortableItem } from '../../src/index'
-import { Avatar, Fab, makeStyles } from '@material-ui/core'
-import FavoriteIcon from '@material-ui/icons/Favorite'
 
-export default {
+const meta: Meta = {
   component: SortableList,
   title: 'react-easy-sort/Interactive avatars',
   parameters: {
@@ -25,13 +24,20 @@ export default {
       defaultValue: 8,
     },
   },
+  args: {
+    count: 8,
+  },
 }
+
+export default meta
 
 const useStyles = makeStyles({
   root: {
     display: 'flex',
     flexWrap: 'wrap',
     userSelect: 'none',
+    width: 996,
+    margin: '30px auto',
   },
   item: {
     position: 'relative',
@@ -44,12 +50,12 @@ const useStyles = makeStyles({
     borderRadius: '100%',
   },
   image: {
-    width: 150,
-    height: 150,
+    width: '150px !important',
+    height: '150px !important',
     pointerEvents: 'none',
   },
   button: {
-    position: 'absolute',
+    position: 'absolute !important',
     bottom: 0,
     right: 0,
   },
@@ -59,14 +65,22 @@ const useStyles = makeStyles({
     '& button': {
       opacity: 0,
     },
+    cursor: 'move',
+    zIndex: 100,
+  },
+  forbidden: {
+    cursor: 'not-allowed',
   },
 })
 
 type StoryProps = {
-  count: number
+  count: number,
+  forbiddenPointType: 'point' | 'element',
+  lockAxis: 'x' | 'y',
+  allowDrag: boolean
 }
 
-export const Demo: Story<StoryProps> = ({ count }: StoryProps) => {
+export const Demo: StoryFn<StoryProps> = ({ count, forbiddenPointType, lockAxis, allowDrag }: StoryProps) => {
   const classes = useStyles()
   const [items, setItems] = React.useState([
     {
@@ -124,7 +138,7 @@ export const Demo: Story<StoryProps> = ({ count }: StoryProps) => {
   ])
 
   const onSortEnd = (oldIndex: number, newIndex: number) => {
-    setItems((array) => arrayMove(array, oldIndex, newIndex))
+    setItems((array) => arrayMoveImmutable(array, oldIndex, newIndex))
   }
 
   return (
@@ -132,6 +146,10 @@ export const Demo: Story<StoryProps> = ({ count }: StoryProps) => {
       onSortEnd={onSortEnd}
       className={classes.root}
       draggedItemClassName={classes.dragged}
+      draggedForbiddenClassName={classes.forbidden}
+      forbiddenPointType={forbiddenPointType}
+      lockAxis={lockAxis}
+      allowDrag={allowDrag}
     >
       {items.slice(0, count).map(({ name, image }) => (
         <SortableItem key={name}>
@@ -140,7 +158,11 @@ export const Demo: Story<StoryProps> = ({ count }: StoryProps) => {
               className={classes.image}
               alt={name}
               src={image}
-              imgProps={{ draggable: false }}
+              slotProps={{
+                img: {
+                  draggable: false
+                }
+              }}
             />
             <Fab
               color="primary"

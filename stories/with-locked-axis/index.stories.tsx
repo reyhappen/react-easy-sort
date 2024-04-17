@@ -1,14 +1,14 @@
 import React from 'react'
-import arrayMove from 'array-move'
+import { arrayMoveImmutable } from 'array-move'
 
 import { action } from '@storybook/addon-actions'
-import { Story } from '@storybook/react'
+import type { Meta, StoryFn } from '@storybook/react'
 
 import SortableList, { SortableItem } from '../../src/index'
 import { generateItems } from '../helpers'
-import { makeStyles } from '@material-ui/core'
+import { makeStyles } from '@mui/styles'
 
-export default {
+const meta: Meta = {
   component: SortableList,
   title: 'react-easy-sort/Axis lock',
   parameters: {
@@ -16,7 +16,7 @@ export default {
   },
   argTypes: {
     count: {
-      name: 'Number of elements',
+      name: 'Count of elements',
       control: {
         type: 'range',
         min: 3,
@@ -31,7 +31,13 @@ export default {
       defaultValue: 'x',
     },
   },
+  args: {
+    count: 6,
+    lockAxis: 'x',
+  },
 }
+
+export default meta
 
 const useStyles = makeStyles({
   list: {
@@ -57,15 +63,22 @@ const useStyles = makeStyles({
   },
   dragged: {
     backgroundColor: 'rgb(37, 37, 197)',
+    cursor: 'move',
+    zIndex: 100,
+  },
+  forbidden: {
+    cursor: 'not-allowed',
   },
 })
 
 type StoryProps = {
-  count: number
-  lockAxis: 'x' | 'y'
+  count: number,
+  forbiddenPointType: 'point' | 'element',
+  lockAxis: 'x' | 'y',
+  allowDrag: boolean
 }
 
-export const Demo: Story<StoryProps> = ({ count, lockAxis }: StoryProps) => {
+export const Demo: StoryFn<StoryProps> = ({ count, forbiddenPointType, lockAxis, allowDrag }: StoryProps) => {
   const classes = useStyles()
 
   const [items, setItems] = React.useState<string[]>([])
@@ -75,7 +88,7 @@ export const Demo: Story<StoryProps> = ({ count, lockAxis }: StoryProps) => {
 
   const onSortEnd = (oldIndex: number, newIndex: number) => {
     action('onSortEnd')(`oldIndex=${oldIndex}, newIndex=${newIndex}`)
-    setItems((array) => arrayMove(array, oldIndex, newIndex))
+    setItems((array) => arrayMoveImmutable(array, oldIndex, newIndex))
   }
 
   return (
@@ -83,7 +96,10 @@ export const Demo: Story<StoryProps> = ({ count, lockAxis }: StoryProps) => {
       onSortEnd={onSortEnd}
       className={classes.list}
       draggedItemClassName={classes.dragged}
+      draggedForbiddenClassName={classes.forbidden}
+      forbiddenPointType={forbiddenPointType}
       lockAxis={lockAxis}
+      allowDrag={allowDrag}
     >
       {items.map((item) => (
         <SortableItem key={item}>

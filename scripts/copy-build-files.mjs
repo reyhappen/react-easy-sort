@@ -1,15 +1,14 @@
-/* eslint-disable no-console, import/no-extraneous-dependencies */
-import path from 'path'
-import fse from 'fs-extra'
+import path from 'node:path'
+import fse from 'node:fs/promises'
 
 async function copyFile(file) {
-  const buildPath = path.resolve(__dirname, '../dist/', path.basename(file.to || file.from))
-  await fse.copy(file.from, buildPath)
+  const buildPath = path.resolve(process.cwd(), './dist/', path.basename(file.to || file.from))
+  await fse.copyFile(file.from, buildPath)
   console.log(`Copied ${file.from} to ${buildPath}`)
 }
 
 async function createPackageFile() {
-  const packageData = await fse.readFile(path.resolve(__dirname, '../package.json'), 'utf8')
+  const packageData = await fse.readFile(path.resolve(process.cwd(), './package.json'), 'utf8')
   const newPackageData = {
     ...JSON.parse(packageData),
     scripts: undefined,
@@ -17,22 +16,21 @@ async function createPackageFile() {
     jest: undefined,
     'lint-staged': undefined,
     main: './index.js',
-    'umd:main': './umd/react-easy-sort.js',
-    unpkg: './umd/react-easy-sort.js',
-    jsdelivr: './umd/react-easy-sort.js',
-    module: './index.module.js',
-    'jsnext:main': './index.module.js',
-    'react-native': './index.module.js',
+    'umd:main': './index.global.js',
+    unpkg: './index.global.js',
+    jsdelivr: './index.global.js',
+    module: './index.mjs',
+    'jsnext:main': './index.mjs',
     types: './index.d.ts',
     exports: {
       '.': {
-        import: './index.module.js',
+        import: './index.mjs',
         require: './index.js',
         types: './index.d.ts',
       },
     },
   }
-  const buildPath = path.resolve(__dirname, '../dist/package.json')
+  const buildPath = path.resolve(process.cwd(), './dist/package.json')
 
   await fse.writeFile(buildPath, JSON.stringify(newPackageData, null, 2), 'utf8')
   console.log(`Created package.json in ${buildPath}`)

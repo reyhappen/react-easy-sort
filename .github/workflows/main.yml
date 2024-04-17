@@ -1,0 +1,74 @@
+name: React Easy Sorter CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # setup node
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18.x
+          registry-url: 'https://registry.npmjs.org/'
+
+      # setup cache
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn config get cache-folder)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v3
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      # install modules
+      - name: Install modules
+        run: yarn install
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            storybook:
+              - 'stories/**'
+              - '.storybook/**'
+            release:
+              - '.release-it.json'
+
+      - name: Build
+        run: yarn build
+
+      - name: Build storybook
+        if: steps.filter.outputs.storybook == 'true'
+        run: yarn build-storybook
+
+      - name: Deploy to GitHub Pages
+        if: steps.filter.outputs.storybook == 'true'
+        uses: JamesIves/github-pages-deploy-action@4.0.0
+        with:
+          branch: gh-pages # The branch the action should deploy to.
+          folder: storybook-static # The folder the action should deploy.
+
+      - name: Release
+        if: steps.filter.outputs.release == 'true'
+        run: |
+          git config user.name "reyhappen"
+          git config user.email "503593966@qq.com"
+          npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
+          yarn release
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

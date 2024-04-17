@@ -1,14 +1,12 @@
 import React from 'react'
-import arrayMove from 'array-move'
-
+import { arrayMoveImmutable } from 'array-move'
 import { action } from '@storybook/addon-actions'
-import { Story } from '@storybook/react'
-
+import type { Meta, StoryFn } from '@storybook/react'
+import { makeStyles } from '@mui/styles'
 import SortableList, { SortableItem, SortableKnob } from '../../src/index'
 import { generateItems } from '../helpers'
-import { makeStyles } from '@material-ui/core'
 
-export default {
+const meta: Meta = {
   component: SortableList,
   title: 'react-easy-sort/With knobs',
   parameters: {
@@ -16,7 +14,7 @@ export default {
   },
   argTypes: {
     count: {
-      name: 'Number of elements',
+      name: 'Count of elements',
       control: {
         type: 'range',
         min: 3,
@@ -26,7 +24,12 @@ export default {
       defaultValue: 3,
     },
   },
+  args: {
+    count: 3,
+  },
 }
+
+export default meta
 
 const useStyles = makeStyles({
   list: {
@@ -47,6 +50,11 @@ const useStyles = makeStyles({
   },
   dragged: {
     backgroundColor: 'rgb(37, 37, 197)',
+    cursor: 'move',
+    zIndex: 100,
+    "& *": {
+      cursor: 'move !important',
+    }
   },
   knob: {
     padding: '0.15rem 0.5rem',
@@ -57,13 +65,22 @@ const useStyles = makeStyles({
     borderRadius: '2px',
     cursor: 'grab',
   },
+  forbidden: {
+    cursor: 'not-allowed',
+    "& *": {
+      cursor: 'not-allowed !important',
+    }
+  },
 })
 
 type StoryProps = {
-  count: number
+  count: number,
+  forbiddenPointType: 'point' | 'element',
+  lockAxis: 'x' | 'y',
+  allowDrag: boolean
 }
 
-export const Demo: Story<StoryProps> = ({ count }) => {
+export const Demo: StoryFn<StoryProps> = ({ count, forbiddenPointType, lockAxis, allowDrag }) => {
   const classes = useStyles()
 
   const [items, setItems] = React.useState<string[]>([])
@@ -72,13 +89,17 @@ export const Demo: Story<StoryProps> = ({ count }) => {
   }, [count])
   const onSortEnd = (oldIndex: number, newIndex: number) => {
     action('onSortEnd')(`oldIndex=${oldIndex}, newIndex=${newIndex}`)
-    setItems((array) => arrayMove(array, oldIndex, newIndex))
+    setItems((array) => arrayMoveImmutable(array, oldIndex, newIndex))
   }
   return (
     <SortableList
       onSortEnd={onSortEnd}
       className={classes.list}
       draggedItemClassName={classes.dragged}
+      draggedForbiddenClassName={classes.forbidden}
+      forbiddenPointType={forbiddenPointType}
+      lockAxis={lockAxis}
+      allowDrag={allowDrag}
     >
       {items.map((item) => (
         <SortableItem key={item}>

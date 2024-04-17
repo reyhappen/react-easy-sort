@@ -4,9 +4,12 @@
     "react-app",
     "prettier",
     "prettier/@typescript-eslint",
-    "prettier/react"
+    "prettier/react",
+    "plugin:storybook/recommended"
   ],
-  "plugins": ["@typescript-eslint/eslint-plugin"],
+  "plugins": [
+    "@typescript-eslint/eslint-plugin"
+  ],
   "rules": {
     "@typescript-eslint/explicit-function-return-type": 0,
     "@typescript-eslint/ban-ts-ignore": 0,

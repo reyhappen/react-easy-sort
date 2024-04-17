@@ -5,5 +5,8 @@ docs
 *.iml
 .yalc
 yalc.lock
-yarn-error.log
+*.log
 .DS_Store
+*storybook.log
+/storybook-static
+/.yarn

@@ -34,19 +34,19 @@ Check out the examples:
 ## Installation
 
 ```shell
-yarn add react-easy-sort
+yarn add @reyhappen/react-easy-sort
 ```
 
 or
 
 ```shell
-npm install react-easy-sort --save
+npm install @reyhappen/react-easy-sort --save
 ```
 
 ## Basic usage
 
 ```js
-import SortableList, { SortableItem } from 'react-easy-sort'
+import SortableList, { SortableItem } from '@reyhappen/react-easy-sort'
 import { arrayMoveImmutable } from 'array-move'
 
 const App = () => {
@@ -57,7 +57,7 @@ const App = () => {
   }
 
   return (
-    <SortableList onSortEnd={onSortEnd} className="list" draggedItemClassName="dragged">
+    <SortableList onSortEnd={onSortEnd} className="list" draggedItemClassName="dragged" draggedForbiddenClassName="notallowedcursor" forbiddenPointType="element">
       {items.map((item) => (
         <SortableItem key={item}>
           <div className="item">{item}</div>
@@ -72,15 +72,17 @@ const App = () => {
 
 ### SortableList
 
-| Name                     |                         Description                          |                      Type                      |         Default |
-| ------------------------ | :----------------------------------------------------------: | :--------------------------------------------: | --------------: |
-| **as**                   |        Determines html tag for the container element         |         `keyof JSX.IntrinsicElements`          |           `div` |
-| **onSortEnd\***          |       Called when the user finishes a sorting gesture.       | `(oldIndex: number, newIndex: number) => void` |               - |
-| **draggedItemClassName** |           Class applied to the item being dragged            |                    `string`                    |               - |
-| **lockAxis**             |            Determines if an axis should be locked            |                 `'x'` or `'y'`                 |                 |
-| **allowDrag**            |           Determines whether items can be dragged            |                   `boolean`                    |          `true` |
-| **customHolderRef**      | Ref of an element to use as a container for the dragged item |     `React.RefObject<HTMLElement \| null>`     | `document.body` |
-| **dropTarget**           |             React element to use as a dropTarget             |                  `ReactNode`                   |                 |
+| Name                          |                               Description                               |                      Type                      |         Default |
+| ----------------------------- | :---------------------------------------------------------------------: | :--------------------------------------------: | --------------: |
+| **as**                        |             Determines html tag for the container element               |         `keyof JSX.IntrinsicElements`          |           `div` |
+| **onSortEnd\***               |             Called when the user finishes a sorting gesture.            | `(oldIndex: number, newIndex: number) => void` |               - |
+| **draggedItemClassName**      |                 Class applied to the item being dragged                 |                    `string`                    |               - |
+| **draggedForbiddenClassName** |  Class applied to the item being dragged out of the container element   |                    `string`                    |               - |
+| **forbiddenPointType**      | whether to use a point or an element to determine the item is in the forbidden position |                    `'point' or 'element'`                    |               point |
+| **lockAxis**                  |                 Determines if an axis should be locked                  |                 `'x'` or `'y'`                 |                 |
+| **allowDrag**                 |                 Determines whether items can be dragged                 |                   `boolean`                    |          `true` |
+| **customHolderRef**           |       Ref of an element to use as a container for the dragged item      |     `React.RefObject<HTMLElement \| null>`     | `document.body` |
+| **dropTarget**                |                   React element to use as a dropTarget                  |                  `ReactNode`                   |                 |
 
 ### SortableItem
 
@@ -91,7 +93,7 @@ This component doesn't take any other props than its child. This child should be
 You can use this component if you don't want the whole item to be draggable but only a specific area of it.
 
 ```js
-import SortableList, { SortableItem, SortableKnob } from 'react-easy-sort'
+import SortableList, { SortableItem, SortableKnob } from '@reyhappen/react-easy-sort'
 import arrayMove from 'array-move'
 
 const App = () => {
@@ -102,7 +104,7 @@ const App = () => {
   }
 
   return (
-    <SortableList onSortEnd={onSortEnd} className="list" draggedItemClassName="dragged">
+    <SortableList onSortEnd={onSortEnd} className="list" draggedItemClassName="dragged" draggedForbiddenClassName="notallowedcursor" forbiddenPointType="element">
       {items.map((item) => (
         <SortableItem key={item}>
           <div className="item">
@@ -138,7 +140,7 @@ Now, open `http://localhost:3001/index.html` and start hacking!
 
 ## License
 
-[MIT](https://github.com/ValentinH/react-easy-sort/blob/master/LICENSE)
+[MIT](https://github.com/reyhappen/react-easy-sort/blob/master/LICENSE)
 
 ## Maintainers
 
@@ -150,17 +152,16 @@ After leaving this company, they gracefully accepted to transfer the project to 
 ## Alternatives
 
 - https://github.com/clauderic/react-sortable-hoc : before creating this library, I was using it and it was also supporting grid layouts. However, we had a lot of errors reported to our Sentry and this project was not maintained anymore.
-- https://github.com/atlassian/react-beautiful-dnd: another great library for sorting items. However, it doesn't support grid layouts (as of 2021-02-05).
+- https://github.com/atlassian/react-beautiful-dnd : another great library for sorting items. However, it doesn't support grid layouts (as of 2021-02-05).
 
 [npm]: https://www.npmjs.com/
 [node]: https://nodejs.org
-[version-badge]: https://img.shields.io/npm/v/react-easy-sort.svg?style=flat-square
-[package]: https://www.npmjs.com/package/react-easy-sort
-[downloads-badge]: https://img.shields.io/npm/dm/react-easy-sort.svg?style=flat-square
-[npmstats]: https://npm-stat.com/charts.html?package=react-easy-sort&from=2021-02-01
-[npmstats-badge]: https://img.shields.io/npm/dm/react-easy-sort.svg?style=flat-square
-[brotli-badge]: http://img.badgesize.io/https://unpkg.com/react-easy-sort/umd/react-easy-sort.min.js?compression=brotli&style=flat-square&1
+[version-badge]: https://img.shields.io/npm/v/@reyhappen/react-easy-sort.svg?style=flat-square
+[package]: https://www.npmjs.com/package/@reyhappen/react-easy-sort
+[downloads-badge]: https://img.shields.io/npm/dm/@reyhappen/react-easy-sort.svg?style=flat-square
+[npmstats]: https://npm-stat.com/charts.html?package=@reyhappen/react-easy-sort&from=2021-02-01
+[npmstats-badge]: https://img.shields.io/npm/dm/@reyhappen/react-easy-sort.svg?style=flat-square
 [license-badge]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
-[license]: https://github.com/ValentinH/react-easy-sort/blob/main/LICENSE
+[license]: https://github.com/reyhappen/react-easy-sort/blob/main/LICENSE
 [prs-badge]: https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square
 [prs]: http://makeapullrequest.com

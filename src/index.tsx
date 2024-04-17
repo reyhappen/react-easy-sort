@@ -1,4 +1,3 @@
-import arrayMove from 'array-move'
 import React, { HTMLAttributes } from 'react'
 
 import { findItemIndexAtPosition } from './helpers'
@@ -6,6 +5,16 @@ import { useDrag, useDropTarget } from './hooks'
 import { Point } from './types'
 
 const DEFAULT_CONTAINER_TAG = 'div'
+
+const arrayMove = function <T>(arr: T[], fromIndex: number, toIndex: number) {
+  const array = arr.slice(); // 创建原数组的副本，避免直接修改原数组
+  const elementToMove = array[fromIndex]; // 获取需要移动的元素
+
+  array.splice(fromIndex, 1); // 从原位置删除该元素
+  array.splice(toIndex, 0, elementToMove); // 在目标位置插入该元素
+
+  return array; // 返回修改后的数组
+}
 
 type Props<TTag extends keyof JSX.IntrinsicElements> = HTMLAttributes<TTag> & {
   children: React.ReactNode
@@ -15,6 +24,10 @@ type Props<TTag extends keyof JSX.IntrinsicElements> = HTMLAttributes<TTag> & {
   onSortEnd: (oldIndex: number, newIndex: number) => void
   /** Class applied to the item being dragged */
   draggedItemClassName?: string
+  /** Class applied to the item being dragged out of the container element */
+  draggedForbiddenClassName?: string
+  /** whether to use a point or an element to determine the item is in the forbidden position */
+  forbiddenPointType?: 'point' | 'element'
   /** Determines which type of html tag will be used for a container element */
   as?: TTag
   /** Determines if an axis should be locked */
@@ -40,6 +53,8 @@ const SortableList = <TTag extends keyof JSX.IntrinsicElements = typeof DEFAULT_
   allowDrag = true,
   onSortEnd,
   draggedItemClassName,
+  draggedForbiddenClassName,
+  forbiddenPointType = 'point',
   as,
   lockAxis,
   customHolderRef,
@@ -76,14 +91,41 @@ const SortableList = <TTag extends keyof JSX.IntrinsicElements = typeof DEFAULT_
   }, [customHolderRef])
 
   const updateTargetPosition = (position: Point) => {
-    if (targetRef.current && sourceIndexRef.current !== undefined) {
-      const offset = offsetPointRef.current
-      const sourceRect = itemsRect.current[sourceIndexRef.current]
-      const newX = lockAxis === 'y' ? sourceRect.left : position.x - offset.x
-      const newY = lockAxis === 'x' ? sourceRect.top : position.y - offset.y
+    if (targetRef.current) {
+      if (sourceIndexRef.current !== undefined) {
+        const offset = offsetPointRef.current
+        const sourceRect = itemsRect.current[sourceIndexRef.current]
+        // new position in window
+        const newX = lockAxis === 'y' ? sourceRect.left : position.x - offset.x
+        const newY = lockAxis === 'x' ? sourceRect.top : position.y - offset.y
 
-      // we use `translate3d` to force using the GPU if available
-      targetRef.current.style.transform = `translate3d(${newX}px, ${newY}px, 0px)`
+        if (containerRef.current && draggedForbiddenClassName) {
+          const containerRect = containerRef.current?.getBoundingClientRect();
+
+          if (forbiddenPointType === 'element') {
+            // checking if the item is in the forbidden position
+            if (newX < containerRect.left || newY < containerRect.top || newX + sourceRect.width > containerRect.right || newY + sourceRect.height > containerRect.bottom) {
+              // targetRef.current.style.cursor = 'not-allowed'
+              targetRef.current.classList.add(draggedForbiddenClassName);
+            } else {
+              // targetRef.current.style.cursor = ''
+              targetRef.current.classList.remove(draggedForbiddenClassName);
+            }
+          } else {
+            // checking if the mouse point is in the forbidden position
+            if (position.x < containerRect.left || position.y < containerRect.top || position.x > containerRect.right || position.y > containerRect.bottom) {
+              // targetRef.current.style.cursor = 'not-allowed'
+              targetRef.current.classList.add(draggedForbiddenClassName);
+            } else {
+              // targetRef.current.style.cursor = ''
+              targetRef.current.classList.remove(draggedForbiddenClassName);
+            }
+          }
+        }
+  
+        // we use `translate3d` to force using the GPU if available
+        targetRef.current.style.transform = `translate3d(${newX}px, ${newY}px, 0px)`
+      }
     }
   }
 

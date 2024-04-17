@@ -60,7 +60,6 @@ export const useDrag = ({
   // we do this to let the user clicks on clickable element inside the container
   // this means that the drag gesture actually starts on the fist move
   const isFirstMoveRef = React.useRef(false)
-  // see https://twitter.com/ValentinHervieu/status/1324407814970920968
   // we do this so that the parent doesn't have to use `useCallback()` for these callbacks
   const callbacksRef = React.useRef({ onStart, onMove, onEnd })
 
