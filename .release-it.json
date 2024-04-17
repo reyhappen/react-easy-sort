@@ -2,7 +2,7 @@
   "git": {
     "requireBranch": "main",
     "addUntrackedFiles": true,
-    "commitMessage": "bump: release v1.7.1",
+    "commitMessage": "bump: release v1.7.3",
     "requireCleanWorkingDir": false,
     "requireUpstream": true,
     "pushRepo": "git@github.com:reyhappen/react-easy-sort.git",
