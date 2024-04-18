@@ -2,7 +2,7 @@
   "git": {
     "requireBranch": "main",
     "addUntrackedFiles": true,
-    "commitMessage": "bump: release v1.7.4",
+    "commitMessage": "bump: release v1.7.5",
     "requireCleanWorkingDir": false,
     "requireUpstream": true,
     "pushArgs": ["--follow-tags"]
